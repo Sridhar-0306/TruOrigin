@@ -28,7 +28,7 @@ embedBtn.addEventListener("click", async () => {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to generate AI-signed image");
+      throw new Error("Generation failed");
     }
 
     const blob = await response.blob();
@@ -37,7 +37,7 @@ embedBtn.addEventListener("click", async () => {
     downloadSection.classList.remove("hidden");
 
   } catch (err) {
-    alert("Error generating AI-signed image");
+    alert("Failed to generate AI-signed image");
     console.error(err);
   } finally {
     embedBtn.disabled = false;
@@ -45,7 +45,6 @@ embedBtn.addEventListener("click", async () => {
   }
 });
 
-/* Download button */
 downloadBtn.addEventListener("click", () => {
   if (!signedImageUrl) return;
 
