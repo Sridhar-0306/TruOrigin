@@ -219,3 +219,37 @@ button:hover {
   transform: scale(1.04);
   box-shadow: 0 10px 25px rgba(56, 189, 248, 0.25);
 }
+
+/* ==============================
+   EMBED PAGE – SUCCESS & DOWNLOAD
+   ============================== */
+
+.success-text {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  text-align: center;          /* ✅ perfectly centered */
+  color: #22c55e;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.download-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #16a34a;         /* green = success action */
+  color: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.download-btn:hover {
+  background: #15803d;
+  transform: scale(1.04);
+  box-shadow: 0 10px 25px rgba(22, 163, 74, 0.35);
+}
+
