@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import hashlib
 import json
-import os
 from datetime import datetime
 
 # ==============================
@@ -26,7 +25,7 @@ def create_signature():
 
     metadata_bytes = json.dumps(metadata, sort_keys=True).encode("utf-8")
     hash_bytes = hashlib.sha256(metadata_bytes).digest()
-    return hash_bytes, metadata
+    return hash_bytes
 
 
 def hash_to_bits(hash_bytes):
@@ -43,8 +42,8 @@ def hash_to_bits(hash_bytes):
 
 def embed_watermark(image_path, output_path):
     """
-    Embeds cryptographic watermark into image using DCT.
-    Cloud-safe and deterministic.
+    Robust, cloud-safe watermark embedding.
+    Ensures output file is ALWAYS written or fails explicitly.
     """
 
     # ---- Load image safely ----
@@ -52,7 +51,13 @@ def embed_watermark(image_path, output_path):
     if image is None:
         raise ValueError("Failed to load image")
 
-    # Normalize color space (important for Render/OpenCV)
+    h, w, _ = image.shape
+
+    # ---- Guard: image must be large enough for DCT ----
+    if h < 64 or w < 64:
+        raise ValueError("Image too small for watermarking (min 64x64 required)")
+
+    # Normalize color space (Render-safe)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     # Convert to YCrCb
@@ -60,13 +65,13 @@ def embed_watermark(image_path, output_path):
     y, cr, cb = cv2.split(ycrcb)
     y = np.float32(y)
 
-    # Create signature
-    hash_bytes, _ = create_signature()
+    # Create watermark bits
+    hash_bytes = create_signature()
     watermark_bits = hash_to_bits(hash_bytes)
 
-    h, w = y.shape
     bit_index = 0
 
+    # ---- DCT embedding ----
     for row in range(0, h - BLOCK_SIZE, BLOCK_SIZE):
         for col in range(0, w - BLOCK_SIZE, BLOCK_SIZE):
 
@@ -82,23 +87,21 @@ def embed_watermark(image_path, output_path):
             else:
                 dct_block[coeff_y, coeff_x] -= WATERMARK_STRENGTH
 
-            idct_block = cv2.idct(dct_block)
-            y[row:row+BLOCK_SIZE, col:col+BLOCK_SIZE] = idct_block
-
+            y[row:row+BLOCK_SIZE, col:col+BLOCK_SIZE] = cv2.idct(dct_block)
             bit_index += 1
 
         if bit_index >= len(watermark_bits):
             break
 
-    # Finalize image
+    # ---- Reconstruct image ----
     y = np.clip(y, 0, 255).astype(np.uint8)
     watermarked_ycrcb = cv2.merge([y, cr, cb])
     watermarked_rgb = cv2.cvtColor(watermarked_ycrcb, cv2.COLOR_YCrCb2RGB)
     watermarked_bgr = cv2.cvtColor(watermarked_rgb, cv2.COLOR_RGB2BGR)
 
-    # ---- Save output (critical check) ----
+    # ---- Save output (CRITICAL) ----
     success = cv2.imwrite(output_path, watermarked_bgr)
     if not success:
-        raise ValueError("Failed to write output image")
+        raise ValueError("Failed to write watermarked image")
 
     return True
