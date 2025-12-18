@@ -11,7 +11,7 @@ form.addEventListener("submit", async (e) => {
   formData.append("image", imageInput.files[0]);
   formData.append("context", contextSelect.value);
 
-  const response = await fetch("http://127.0.0.1:5000/verify", {
+  const response = await fetch("https://truorigin-backend.onrender.com/verify", {
     method: "POST",
     body: formData
   });
