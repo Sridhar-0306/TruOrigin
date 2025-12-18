@@ -100,38 +100,43 @@ def verify_image():
 @app.route("/embed", methods=["POST"])
 def embed_image():
 
-    if "image" not in request.files:
-        return jsonify({"error": "No image uploaded"}), 400
+    try:
+        if "image" not in request.files:
+            return jsonify({"error": "No image uploaded"}), 400
 
-    file = request.files["image"]
+        file = request.files["image"]
 
-    if file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
+        if file.filename == "":
+            return jsonify({"error": "Empty filename"}), 400
 
-    if not allowed_file(file.filename):
-        return jsonify({"error": "Unsupported image format"}), 400
+        if not allowed_file(file.filename):
+            return jsonify({"error": "Unsupported image format"}), 400
 
-    input_ext = file.filename.rsplit(".", 1)[1].lower()
-    mime_type = MIME_MAP[input_ext]
+        input_ext = file.filename.rsplit(".", 1)[1].lower()
+        mime_type = MIME_MAP[input_ext]
 
-    input_filename = secure_filename(file.filename)
-    input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_filename)
-    file.save(input_path)
+        input_filename = secure_filename(file.filename)
+        input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_filename)
+        file.save(input_path)
 
-    output_filename = f"signed_{uuid.uuid4().hex}.{input_ext}"
-    output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
+        output_filename = f"signed_{uuid.uuid4().hex}.{input_ext}"
+        output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
 
-    embed_watermark(input_path, output_path)
+        embed_watermark(input_path, output_path)
 
-    if not os.path.exists(output_path):
-        return jsonify({"error": "Failed to generate signed image"}), 500
+        if not os.path.exists(output_path):
+            return jsonify({"error": "Signed image not created"}), 500
 
-    return send_file(
-        output_path,
-        mimetype=mime_type,
-        as_attachment=True,
-        download_name="ai_signed_image." + input_ext
-    )
+        return send_file(
+            output_path,
+            mimetype=mime_type,
+            as_attachment=True,
+            download_name="ai_signed_image." + input_ext
+        )
+
+    except Exception as e:
+        app.logger.exception("Embed route failed")
+        return jsonify({"error": str(e)}), 500
 
 
 # ==============================
@@ -141,5 +146,3 @@ def embed_image():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
