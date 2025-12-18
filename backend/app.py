@@ -8,6 +8,7 @@ from detect import detect_watermark
 from policy import enforce_policy
 from embed import embed_watermark
 
+
 # ==============================
 # APP CONFIG
 # ==============================
@@ -16,16 +17,24 @@ app = Flask(__name__)
 CORS(app)
 
 UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Supported image formats
 ALLOWED_EXTENSIONS = {
     "jpg", "jpeg", "png",
     "bmp", "tiff", "tif",
     "webp"
 }
 
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+MIME_MAP = {
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "png": "image/png",
+    "bmp": "image/bmp",
+    "tiff": "image/tiff",
+    "tif": "image/tiff",
+    "webp": "image/webp"
+}
 
 
 # ==============================
@@ -33,10 +42,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ==============================
 
 def allowed_file(filename):
-    return (
-        "." in filename and
-        filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-    )
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # ==============================
@@ -52,13 +58,10 @@ def home():
 
 
 # ------------------------------------------------
-# VERIFY & ENFORCE (existing functionality)
+# VERIFY & ENFORCE
 # ------------------------------------------------
 @app.route("/verify", methods=["POST"])
 def verify_image():
-    """
-    Upload image → detect watermark → enforce policy
-    """
 
     if "image" not in request.files:
         return jsonify({"error": "No image uploaded"}), 400
@@ -76,12 +79,10 @@ def verify_image():
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(file_path)
 
-    # 1️⃣ Detect watermark
     detection = detect_watermark(file_path)
     status = detection["status"]
     confidence = detection["confidence"]
 
-    # 2️⃣ Enforce policy
     policy_result = enforce_policy(status, context)
 
     return jsonify({
@@ -94,13 +95,10 @@ def verify_image():
 
 
 # ------------------------------------------------
-# EMBED / SIMULATE AI GENERATION (NEW)
+# EMBED / SIMULATED AI GENERATION
 # ------------------------------------------------
 @app.route("/embed", methods=["POST"])
 def embed_image():
-    """
-    Upload image → embed watermark → return AI-signed image
-    """
 
     if "image" not in request.files:
         return jsonify({"error": "No image uploaded"}), 400
@@ -113,22 +111,26 @@ def embed_image():
     if not allowed_file(file.filename):
         return jsonify({"error": "Unsupported image format"}), 400
 
-    # Save input image
     input_ext = file.filename.rsplit(".", 1)[1].lower()
-    input_name = secure_filename(file.filename)
-    input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_name)
+    mime_type = MIME_MAP[input_ext]
+
+    input_filename = secure_filename(file.filename)
+    input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_filename)
     file.save(input_path)
 
-    # Output signed image (preserve format)
     output_filename = f"signed_{uuid.uuid4().hex}.{input_ext}"
     output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
 
     embed_watermark(input_path, output_path)
 
+    if not os.path.exists(output_path):
+        return jsonify({"error": "Failed to generate signed image"}), 500
+
     return send_file(
         output_path,
+        mimetype=mime_type,
         as_attachment=True,
-        mimetype=f"image/{input_ext}"
+        download_name="ai_signed_image." + input_ext
     )
 
 
@@ -137,7 +139,7 @@ def embed_image():
 # ==============================
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
