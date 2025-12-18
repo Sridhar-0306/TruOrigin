@@ -11,7 +11,7 @@ btn.addEventListener("click", async () => {
   const formData = new FormData();
   formData.append("image", fileInput.files[0]);
 
-  const response = await fetch("http://127.0.0.1:5000/embed", {
+  const response = await fetch("https://truorigin-backend.onrender.com/embed", {
     method: "POST",
     body: formData
   });
