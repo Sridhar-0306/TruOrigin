@@ -7,8 +7,9 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container center">
   <h1>Simulated AI Content Generation</h1>
+
   <p class="subtitle">
     This module demonstrates how AI systems embed authenticity signals
     at the time of content creation.
@@ -19,9 +20,15 @@
     <button id="embedBtn">Generate AI-Signed Image</button>
   </div>
 
-  <div id="downloadSection" class="hidden">
-    <p>AI-signed image generated successfully.</p>
-    <a id="downloadLink" download>Download Image</a>
+  <!-- SUCCESS + DOWNLOAD -->
+  <div id="downloadSection" class="hidden center">
+    <p class="success-text">
+      AI-signed image generated successfully.
+    </p>
+
+    <button id="downloadBtn" class="download-btn">
+      Download AI-Signed Image
+    </button>
   </div>
 </div>
 
