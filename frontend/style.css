@@ -1,0 +1,221 @@
+/* ==============================
+   GLOBAL STYLES
+   ============================== */
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #0f172a;
+  color: #e5e7eb;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+
+/* ==============================
+   HEADINGS & TEXT
+   ============================== */
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin-bottom: 30px;
+}
+
+.center {
+  text-align: center;
+}
+
+.brand {
+  font-size: 42px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  margin-bottom: 14px;
+}
+
+/* Unified hero text */
+.tagline,
+.responsible-text {
+  max-width: 720px;
+  margin: 0 auto 24px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #94a3b8;
+  text-align: center;
+  font-weight: 400;
+}
+
+/* Slight emphasis for main tagline */
+.tagline {
+  font-weight: 500;
+}
+
+.footer-text {
+  color: #64748b;
+  font-size: 14px;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+
+/* ==============================
+   CARDS & LAYOUT
+   ============================== */
+
+.card {
+  background: #020617;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.hero-card {
+  background: #020617;
+  padding: 40px;
+  border-radius: 10px;
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.hero-card h2 {
+  margin-bottom: 25px;
+  font-size: 22px;
+}
+
+
+/* ==============================
+   FORMS (VERIFY PAGE)
+   ============================== */
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input[type="file"],
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+button {
+  margin-top: 25px;
+  padding: 12px;
+  width: 100%;
+  background: #2563eb;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+
+/* ==============================
+   RESULTS
+   ============================== */
+
+.result {
+  background: #020617;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 12px;
+  column-gap: 20px;
+}
+
+#decision {
+  font-weight: bold;
+}
+
+.allow {
+  color: #22c55e;
+}
+
+.warn {
+  color: #eab308;
+}
+
+.block {
+  color: #ef4444;
+}
+
+
+/* ==============================
+   BUTTONS (HOME PAGE)
+   ============================== */
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.primary-btn,
+.secondary-btn {
+  display: block;
+  text-decoration: none;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+/* Primary */
+.primary-btn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+  transform: scale(1.04);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+/* Secondary */
+.secondary-btn {
+  background: #020617;
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+}
+
+.secondary-btn:hover {
+  background: #0f172a;
+  transform: scale(1.04);
+  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.25);
+}

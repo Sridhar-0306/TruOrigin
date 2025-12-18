@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Auth MVP – Content Verification</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1>AI Content Authentication & Enforcement</h1>
+    <p class="subtitle">
+      Verify whether media content is AI-generated, tampered, or unverified,
+      and enforce usage policies based on real-world context.
+    </p>
+
+    <div class="card">
+      <form id="verifyForm">
+        
+        <label>Upload Image</label>
+        <input type="file" id="imageInput" accept="image/*" required />
+
+        <label>Usage Context</label>
+        <select id="contextSelect" required>
+          <option value="">Select context</option>
+          <option value="legal_government">Legal / Government</option>
+          <option value="education_exam">Education / Exams</option>
+          <option value="healthcare_medical">Healthcare / Medical</option>
+          <option value="media_marketing">Media / Marketing</option>
+          <option value="creative_entertainment">Creative / Entertainment</option>
+        </select>
+
+        <button type="submit">Verify Content</button>
+      </form>
+    </div>
+
+    <div id="result" class="result hidden">
+      <h2>Verification Result</h2>
+      <div class="result-grid">
+        <div><strong>Status:</strong> <span id="status"></span></div>
+        <div><strong>Confidence:</strong> <span id="confidence"></span></div>
+        <div><strong>Decision:</strong> <span id="decision"></span></div>
+        <div><strong>Reason:</strong> <span id="reason"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
