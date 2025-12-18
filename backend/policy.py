@@ -50,32 +50,58 @@ POLICY_RULES = {
 # POLICY ENFORCEMENT FUNCTION
 # ==============================
 
-def enforce_policy(detection_status, context):
+def enforce_policy(status, context):
     """
-    Enforces policy based on detection status and usage context
+    Enforces context-aware rules WITHOUT blocking unsigned content.
     """
 
     context = context.lower()
 
-    if context not in POLICY_RULES:
+    # 🚫 Always block tampered content
+    if status == "TAMPERED":
         return {
-            "decision": BLOCK,
-            "reason": "Unknown usage context"
+            "decision": "BLOCK",
+            "reason": "Content integrity compromised (tampered)"
         }
 
-    decision = POLICY_RULES[context].get(detection_status, BLOCK)
+    # ⚠️ AI-generated content rules
+    if status == "AI_GENERATED_AUTHENTIC":
+        if context in ["legal_government", "government"]:
+            return {
+                "decision": "WARN",
+                "reason": "AI-generated content requires disclosure and approval in government context"
+            }
 
-    reason_map = {
-        BLOCK: "Content not permitted in this context",
-        WARN: "AI-generated or unverified content – disclosure required",
-        ALLOW: "Content permitted"
-    }
+        if context in ["education_exam", "education"]:
+            return {
+                "decision": "WARN",
+                "reason": "AI-generated content flagged for academic integrity review"
+            }
 
+        if context in ["media_marketing", "media"]:
+            return {
+                "decision": "WARN",
+                "reason": "AI-generated content must be disclosed"
+            }
+
+        # Creative, general use
+        return {
+            "decision": "ALLOW",
+            "reason": "AI-generated content allowed"
+        }
+
+    # ✅ Unsigned / unknown content (IMPORTANT CHANGE)
+    if status == "NO_VERIFIABLE_SIGNATURE":
+        return {
+            "decision": "ALLOW",
+            "reason": "Content origin unknown; allowed under standard rules"
+        }
+
+    # Fallback (should not hit)
     return {
-        "decision": decision,
-        "reason": reason_map[decision]
+        "decision": "ALLOW",
+        "reason": "No restrictions applied"
     }
-
 
 # ==============================
 # CLI TEST
